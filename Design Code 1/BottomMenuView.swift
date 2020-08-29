@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct BottomMenuView: View {
-    @ObservedObject
     @EnvironmentObject var user: UserStore
     @Binding var showProfile: Bool
     var body: some View {
