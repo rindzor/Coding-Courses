@@ -1,0 +1,53 @@
+//
+//  CourseStore.swift
+//  Design Code 1
+//
+//  Created by  mac on 02.08.2020.
+//  Copyright © 2020 Vladimir Drozdin. All rights reserved.
+//
+
+import SwiftUI
+import Contentful
+import Combine
+
+let client = Client(spaceId: "0ge8xzmnbp2c", environmentId: "master", accessToken: "03010b0d79abcb655ca3fda453f2f493b5472e0aaa53664bc7dea5ef4fce2676")
+
+func getArray(typeId: String, completion: @escaping([Entry]) -> ()) {
+    let query = Query.where(contentTypeId: typeId)
+    
+    client.fetchArray(of: Entry.self, matching: query) { result in
+        switch result {
+        case .success(let array):
+            DispatchQueue.main.async {
+                completion(array.items)
+            }
+
+        case .failure(let error):
+            print(error)
+        }
+    }
+    .resume()
+}
+
+class CourseStore: ObservableObject {
+    @Published var courses: [CourseData] = courseData
+    
+    init() {
+        let colors = [#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1), #colorLiteral(red: 0.9372549057, green: 0.3490196168, blue: 0.1921568662, alpha: 1), #colorLiteral(red: 0.9686274529, green: 0.78039217, blue: 0.3450980484, alpha: 1), #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1), #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1), #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1), #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)]
+        var index = 0
+        getArray(typeId: "course") { (items) -> (Void) in
+            items.forEach { (item) in
+                //print(item.fields["title"] as! String)
+                self.courses.append(CourseData(title: item.fields["title"] as! String,
+                                               subtitle: item.fields["subtitle"] as! String,
+                                               image: item.fields.linkedAsset(at: "image")?.url ?? URL(string: "")!,
+                                               logo: #imageLiteral(resourceName: "Logo1"),
+                                               color: colors[index],
+                                               show: false))
+                index += 1
+            }
+            
+        }
+    }
+}
+
