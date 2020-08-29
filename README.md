@@ -1,6 +1,7 @@
 # Coding-Courses
 
 iOS application written in SwiftUI with a particular attention to animations
+![](https://github.com/rindzor/Coding-Courses/blob/master/DesignCodePres.png)
 
 # Get know UI and aminations
 
